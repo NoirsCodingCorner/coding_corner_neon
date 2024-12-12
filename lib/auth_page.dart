@@ -1,14 +1,14 @@
-import 'package:coding_corner/AnimatedGradientText.dart';
-import 'package:coding_corner/NeonButton.dart';
-import 'package:coding_corner/NeonCard.dart';
-import 'package:coding_corner/NeonText.dart';
-import 'package:coding_corner/NeonTextButton.dart';
+import 'package:coding_corner/NeonWidgets/NeonButton.dart';
+import 'package:coding_corner/NeonWidgets/neonCard.dart';
+import 'package:coding_corner/NeonWidgets/neonContainer.dart';
+import 'package:coding_corner/NeonWidgets/neonProgressBar.dart';
+import 'package:coding_corner/NeonWidgets/neonSlider.dart';
+import 'package:coding_corner/NeonWidgets/neonText.dart';
+import 'package:coding_corner/NeonWidgets/neonTextField.dart';
 import 'package:coding_corner/StarBackground.dart';
-import 'package:coding_corner/textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:neon/neon.dart';
-
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:simple_firebase/auth.dart';
 
 // Assuming these custom widgets are defined elsewhere in your project
 // import 'neon_widgets.dart'; // Replace with your actual import path
@@ -48,13 +48,16 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   // Function to handle form submission (Login/Register)
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     if (_isLogin) {
       // Handle login logic
       String email = _email.value.trim();
       String password = _password.value.trim();
       // Add your login logic here
       print("Login with Email: $email, Password: $password");
+      User? user= await Auth().signInWithEmail(email, password);
+      print(user?.uid);
+
     } else {
       // Handle registration logic
       String username = _username.value.trim();
@@ -74,7 +77,8 @@ class _AuthPageState extends State<AuthPage> {
       }
 
       // Add your registration logic here
-      print("Register with Username: $username, Email: $email, Password: $password");
+      User? user= await Auth().registerWithEmail(email, password);
+      print(user?.uid);
     }
   }
 
@@ -89,92 +93,58 @@ class _AuthPageState extends State<AuthPage> {
             maxStars: 50,
           ),
           Center(
-            child: SingleChildScrollView(
-              child: Container(
-                width: 400,
-                padding: const EdgeInsets.all(20.0),
-                child: NeonCard(
-                  neonColor: Colors.pinkAccent,
-                  children: [
-                    // Title Text
-                    NeonText(
-                      text: _isLogin ? "Welcome back!" : "Create Account",
-                      fontSize: 30,
-                      neonColor: Colors.greenAccent,
-                    ),
-                    const SizedBox(height: 20),
+          child: Container(
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonText",style: TextStyle(color: Colors.white),), NeonText(text: "NeonText",)],
+                  ),
+                  SizedBox(height: 20,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonButton",style: TextStyle(color: Colors.white),), NeonButton(icon: Icons.abc, onPressed: () {},size: 60,neonColor: Colors.pink,)],
+                  ),
+                  SizedBox(height: 20,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonCard",style: TextStyle(color: Colors.white),), NeonCard(children: [Text("NeonCard",style: TextStyle(color: Colors.white))], neonColor: Colors.greenAccent)],
+                  ),
+                  SizedBox(height: 20,),
 
-                    // If Registration Form, show Username Field
-                    if (!_isLogin) ...[
-                      NeonTextField(
-                        textValue: _username,
-                        hintText: "Username",
-                        neonColor: Colors.greenAccent,
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonContainer",style: TextStyle(color: Colors.white),), NeonContainer(neonColor: Colors.purpleAccent,child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("NeonContainer",style: TextStyle(color: Colors.white)),
+                    ),)],
+                  ),
+                  SizedBox(height: 20,),
 
-                    // Email Field
-                    NeonTextField(
-                      textValue: _email,
-                      hintText: "Email",
-                      neonColor: Colors.greenAccent,
-                    ),
-                    const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonSlider",style: TextStyle(color: Colors.white),), SizedBox(width: 100,height: 20,child: NeonSlider(segments: 5,neonColor: Colors.blueAccent, value: 0.5, onChanged: (double value) {  },))],
+                  ),
+                  SizedBox(height: 20,),
 
-                    // Password Field
-                    NeonTextField(
-                      textValue: _password,
-                      hintText: "Password",
-                      neonColor: Colors.greenAccent,
-                    ),
-                    const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonProgressBar",style: TextStyle(color: Colors.white),), SizedBox(width: 100,height: 20,child: NeonProgressBar(progress: 0.5,neonColor: Colors.red,))],
+                  ),
+                  SizedBox(height: 20,),
 
-                    // If Registration Form, show Confirm Password Field
-                    if (!_isLogin) ...[
-                      NeonTextField(
-                        textValue: _confirmPassword,
-                        hintText: "Confirm Password",
-                        neonColor: Colors.greenAccent,
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Submit Button (Login/Register)
-                    NeonTextButton(
-                      text: _isLogin ? "Login" : "Register",
-                      onPressed: _handleSubmit,
-                      neonColor: Colors.greenAccent,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Toggle between Login and Register
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        NeonText(
-                          text: _isLogin
-                              ? "No account? No problem, make one today: "
-                              : "Already have an account? ",
-                          fontSize: 13,
-                          neonColor: Colors.greenAccent,
-                          fontWeight: FontWeight.w300,
-                        ),
-                        NeonTextButton(
-                          text: _isLogin ? "Register" : "Back to Login",
-                          onPressed: _toggleForm,
-                          textStyle: TextStyle(
-                            fontSize: 15,
-                            color: Colors.cyanAccent,
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("NeonTextField",style: TextStyle(color: Colors.white),), SizedBox(width: 100,height: 20,child: NeonTextField(neonColor: Colors.orangeAccent, textValue: ValueNotifier("ValueNotifier"),))],
+                  ),
+                ],
               ),
-            ),
-          ),
+            )
+            ,
+          ),),
         ],
       ),
     );
